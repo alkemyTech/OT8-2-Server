@@ -36,6 +36,6 @@ public class Transaction {
     private Timestamp transactionDate;
 
     @ManyToOne
-    @JoinColumn(name="ACCOUNT_ID", referencedColumnName = "ID")
-    private Account accountId;
+    @JoinColumn(name="ACCOUNT", referencedColumnName = "ID")
+    private Account account;
 }
