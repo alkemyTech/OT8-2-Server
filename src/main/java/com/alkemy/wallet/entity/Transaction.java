@@ -1,10 +1,11 @@
 package com.alkemy.wallet.entity;
 
 import com.alkemy.wallet.enums.EType;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.*;
+
 import java.sql.Timestamp;
 
 @NoArgsConstructor
@@ -19,7 +20,7 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ID")
-    private long id;
+    private Long id;
 
     @Column(name = "AMOUNT", nullable = false)
     private double amount;
