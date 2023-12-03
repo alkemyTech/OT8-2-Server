@@ -48,7 +48,7 @@ public class Account {
 
     @ManyToOne
     @JoinColumn(name="USER_ID", referencedColumnName = "ID")
-    private User userId;
+    private User user;
 
     @OneToMany(mappedBy = "accountId")
     private List<Transaction> transactions;
