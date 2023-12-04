@@ -3,6 +3,7 @@ package com.alkemy.wallet.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
