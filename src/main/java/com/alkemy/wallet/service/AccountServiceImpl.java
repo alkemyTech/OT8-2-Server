@@ -3,6 +3,8 @@ package com.alkemy.wallet.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import com.alkemy.wallet.dto.BalanceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.alkemy.wallet.dto.AccountDto;
@@ -33,6 +35,27 @@ public class AccountServiceImpl implements IAccountService {
                 accountsDto.add(accountDto);
             }
             return accountsDto;
+        }
+        return null;
+    }
+    @Override
+    public List<BalanceDto> getBalanceById(Long Id){
+        Optional<User> optionalUser=userRepository.findById(Id);
+        if(optionalUser.isPresent()){
+            User user=optionalUser.get();
+            List<Account> accounts=user.getAccounts();
+            List<BalanceDto> balancesDto= new ArrayList<>();
+            for (Account account : accounts){
+                BalanceDto balanceDto= new BalanceDto(
+                        account.getId(),
+                        account.getCurrency().name(),
+                        account.getBalance(),
+                        null,
+                        null
+                );
+                balancesDto.add(balanceDto);
+            }
+            return balancesDto;
         }
         return null;
     }
