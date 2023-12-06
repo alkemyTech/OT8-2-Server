@@ -1,6 +1,8 @@
 package com.alkemy.wallet.controller;
 
 import java.util.List;
+
+import com.alkemy.wallet.dto.BalanceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,5 +25,9 @@ public class AccountController {
         List<AccountDto> accountsDto = accountServiceImpl.getAccountsByUserId(id);
         return new ResponseEntity<>(accountsDto, HttpStatus.OK);
     }
-
+    @GetMapping("/accounts/balance/{id}")
+    public ResponseEntity<List<BalanceDto>>getBalanceById(@PathVariable long id){
+        List<BalanceDto> balanceDto =accountServiceImpl.getBalanceById(id);
+        return new ResponseEntity<>(balanceDto,HttpStatus.OK);
+    }
 }
