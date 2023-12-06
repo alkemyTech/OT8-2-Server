@@ -1,6 +1,8 @@
 package com.alkemy.wallet.service;
 
+import com.alkemy.wallet.dto.AccountDto;
 import com.alkemy.wallet.dto.UserDto;
+import com.alkemy.wallet.entity.Account;
 import com.alkemy.wallet.entity.User;
 import com.alkemy.wallet.repository.IUserRepository;
 import org.springframework.stereotype.Service;
@@ -20,12 +22,22 @@ public class UserServiceImpl implements IUserService{
     public List<UserDto> getUsers() {
         List<User> users = userRepository.findAll();
         List<UserDto> usersDto = users.stream().map((user) -> {
+            List<Account> userAccounts = user.getAccounts();
+            List<AccountDto> accountsDto = userAccounts.stream().map(account -> {
+                return new AccountDto(
+                        user.getEmail(),
+                        account.getId(),
+                        account.getCurrency().name(),
+                        account.getBalance(),
+                        account.getTransactionLimit()
+                );
+            }).toList();
             return new UserDto(
                     user.getFirstName(),
                     user.getLastName(),
                     user.getEmail(),
                     user.getRole().getName().name(),
-                    null
+                    accountsDto
             );
         }).toList();
         return usersDto;
