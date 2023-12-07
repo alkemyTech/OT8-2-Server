@@ -21,7 +21,7 @@ public class UserController {
         this.userService = userService;
     }
     @GetMapping
-    public ResponseEntity<List<UserDto>> getUsers(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
+    public ResponseEntity<List<UserDto>> getUsers(){
         List<UserDto> users = userService.getUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }

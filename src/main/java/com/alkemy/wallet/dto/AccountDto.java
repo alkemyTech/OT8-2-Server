@@ -10,8 +10,8 @@ import lombok.Setter;
 
 public class AccountDto {
     private String username;
-    private Long accountId;
+    private long accountId;
     private String currency;
-    private Double transactionLimit;
-    private Double balance;
+    private double transactionLimit;
+    private double balance;
 }
