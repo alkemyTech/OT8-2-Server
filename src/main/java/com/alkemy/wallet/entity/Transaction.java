@@ -33,10 +33,10 @@ public class Transaction {
     private String description;
 
     @CreationTimestamp
-    @Column(name = "TRANSACTION_DATE", nullable = false)
+    @Column(name = "TRANSACTION_DATE")
     private Timestamp transactionDate;
 
     @ManyToOne
-    @JoinColumn(name="ACCOUNT", referencedColumnName = "ID")
+    @JoinColumn(name="ACCOUNT_ID", referencedColumnName = "ID")
     private Account account;
 }
