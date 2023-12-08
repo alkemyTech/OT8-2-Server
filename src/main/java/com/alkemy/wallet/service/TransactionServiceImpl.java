@@ -23,7 +23,6 @@ public class TransactionServiceImpl implements ITransactionService {
         Optional<User> optionalUser=userRepository.findById(id);
         if(optionalUser.isPresent()){
             User user=optionalUser.get();
-
             List<Account> accounts=user.getAccounts();
             List<TransactionDto> transactionsDto= new ArrayList<>();
             for(Account account:accounts){
