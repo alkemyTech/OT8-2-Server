@@ -2,9 +2,11 @@ package com.alkemy.wallet.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.alkemy.wallet.dto.BalanceDto;
+import com.alkemy.wallet.dto.request.UpdateAccountRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.alkemy.wallet.dto.AccountDto;
@@ -59,6 +61,33 @@ public class AccountServiceImpl implements IAccountService {
         }
         return null;
     }
-    
+
+    @Override
+    public AccountDto updateTransactionLimit(Long id, UpdateAccountRequestDto updateRequest, String token) {
+        Optional<Account> accountOptional = accountRepository.findById(id);
+        if(accountOptional.isPresent()){
+            Account account = accountOptional.get();
+            String userEmail = jwtService.extractUserName(token.substring(7));
+            Optional<User> userOptional = userRepository.findByEmail(userEmail);
+            if(userOptional.isPresent()){
+                User user = userOptional.get();
+                if(Objects.equals(account.getUser().getId(), user.getId())){
+                    if(updateRequest.getNewTransactionLimit() > 0.0){
+                        account.setTransactionLimit(updateRequest.getNewTransactionLimit());
+                        accountRepository.save(account);
+                        return new AccountDto(
+                                userEmail,
+                                account.getId(),
+                                account.getCurrency().name(),
+                                account.getBalance(),
+                                account.getTransactionLimit()
+                        );
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
 }
 
