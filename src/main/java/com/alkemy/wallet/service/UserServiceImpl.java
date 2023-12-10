@@ -2,22 +2,26 @@ package com.alkemy.wallet.service;
 
 import com.alkemy.wallet.dto.AccountDto;
 import com.alkemy.wallet.dto.UserDto;
+import com.alkemy.wallet.dto.response.UserInfoResponseDto;
 import com.alkemy.wallet.entity.Account;
 import com.alkemy.wallet.entity.User;
 import com.alkemy.wallet.repository.IUserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements IUserService{
 
     private final IUserRepository userRepository;
-
-    public UserServiceImpl(IUserRepository userRepository){
+    private final IJwtService jwtService;
+    public UserServiceImpl(IUserRepository userRepository,JwtServiceImpl jwtService){
         this.userRepository = userRepository;
+        this.jwtService = jwtService;
     }
+
     @Override
     public List<UserDto> getUsers() {
         List<User> users = userRepository.findAll();
@@ -43,13 +47,23 @@ public class UserServiceImpl implements IUserService{
         return usersDto;
     }
     @Override
-    public User deleteUserById(Long id) {
+    public UserInfoResponseDto deleteUserById(Long id,String token) {
         Optional<User> userOptional =userRepository.findById(id);
         if(userOptional.isPresent()){
             User user=userOptional.get();
-            user.setSoftDelete(Boolean.TRUE);
-            userRepository.save(user);
-            return user;
+            String userEmail=jwtService.extractUsername(token.substring(7));
+            if(Objects.equals(user.getEmail(), userEmail)){
+                user.setSoftDelete(Boolean.TRUE);
+                userRepository.save(user);
+                return new UserInfoResponseDto(
+                        user.getEmail(),
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getCreationDate(),
+                        user.getUpdateDate()
+                );
+            }
+
         }
         return null;
     }
