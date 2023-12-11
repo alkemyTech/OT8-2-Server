@@ -1,5 +1,5 @@
 package com.alkemy.wallet.enums;
 
-public enum EType {
+public enum ETransactionType {
     INCOME,PAYMENT,DEPOSIT
 }
