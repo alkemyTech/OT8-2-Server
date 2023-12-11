@@ -5,6 +5,8 @@ import java.util.List;
 import com.alkemy.wallet.dto.BalanceDto;
 import com.alkemy.wallet.dto.response.PageableAccountResponseDto;
 import com.alkemy.wallet.service.IAccountService;
+import com.alkemy.wallet.entity.Account;
+import com.alkemy.wallet.enums.ECurrency;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,5 +40,10 @@ public class AccountController {
     public ResponseEntity<List<BalanceDto>>getBalanceById(@PathVariable long id){
         List<BalanceDto> balanceDto =accountService.getBalanceById(id);
         return new ResponseEntity<>(balanceDto,HttpStatus.OK);
+    }
+    @PostMapping("/accounts/{userId}")
+    public ResponseEntity<AccountDto> createAccount(@PathVariable Long userId, @RequestBody AccountDto account){
+        AccountDto responseAccount = accountServiceImpl.createAccount(userId, ECurrency.valueOf(account.getCurrency()));
+        return new ResponseEntity<>(responseAccount, HttpStatus.CREATED);
     }
 }
