@@ -9,6 +9,9 @@ import com.alkemy.wallet.dto.FixedTermDepositDto;
 import com.alkemy.wallet.dto.TransactionDto;
 import com.alkemy.wallet.entity.FixedTermDeposit;
 import com.alkemy.wallet.entity.Transaction;
+import com.alkemy.wallet.enums.ECurrency;
+import com.alkemy.wallet.repository.IAccountRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.alkemy.wallet.dto.AccountDto;
@@ -21,6 +24,9 @@ public class AccountServiceImpl implements IAccountService {
 
     @Autowired
     private IUserRepository userRepository;
+
+    @Autowired
+    private IAccountRepository accountRepository;
 
     @Override
     public List<AccountDto> getAccountsByUserId(Long id) {
@@ -63,6 +69,7 @@ public class AccountServiceImpl implements IAccountService {
         }
         return null;
     }
+
     public List<TransactionDto> getHistory(Long id){
         Optional<User> optionalUser=userRepository.findById(id);
         if(optionalUser.isPresent()){
@@ -108,6 +115,41 @@ public class AccountServiceImpl implements IAccountService {
                 }
             }
             return fixedTermDepositsDto;
+        }
+        return null;
+    }
+
+
+    @Override
+    public AccountDto createAccount(Long userId, ECurrency currency) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if(optionalUser.isPresent()){
+            User user = optionalUser.get();
+
+            Optional<Account> existAccount = accountRepository.findByUserAndCurrency(user, currency);
+            if(existAccount.isPresent()){
+                return null;
+            }
+
+            Account account = new Account();
+            account.setUser(user);
+            account.setBalance(0.0);
+            account.setCurrency(currency);
+
+            if(ECurrency.ARS.equals(currency)){
+                account.setTransactionLimit(300000.0);
+            } else if (ECurrency.USD.equals(currency)) {
+                account.setTransactionLimit(1000.0);
+            }
+
+            accountRepository.save(account);
+            AccountDto accountDto = new AccountDto(
+                    account.getUser().getUsername(),
+                    account.getId(),
+                    account.getCurrency().name(),
+                    account.getTransactionLimit(),
+                    account.getBalance());
+            return accountDto;
         }
         return null;
     }
