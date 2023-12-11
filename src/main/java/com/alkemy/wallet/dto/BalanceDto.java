@@ -13,6 +13,6 @@ public class BalanceDto {
     private long accountID;
     private String currency;
     private double balance;
-    private List<?> transactions;
-    private List<?> fixedTermDeposits;
+    private List<TransactionDto> history;
+    private List<FixedTermDepositDto> fixedTerm;
 }
