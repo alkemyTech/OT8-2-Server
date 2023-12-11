@@ -6,10 +6,8 @@ import com.alkemy.wallet.service.TransactionServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
 
 import java.util.List;
 
@@ -23,6 +21,12 @@ public class TransactionController {
     public ResponseEntity<List<TransactionDto>>getTransactionsByUserId(@PathVariable Long id){
         List<TransactionDto> transactionsDto=transactionServiceImpl.getTransactionsByUserId(id);
         return new ResponseEntity<>(transactionsDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/sendArs/{userId}")
+    public ResponseEntity<List<TransactionDto>> sendArs(@PathVariable Long userId, @RequestBody TransactionDto transactionDto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
+        List<TransactionDto> transactionResponse = transactionServiceImpl.sendArs(userId, transactionDto, token);
+        return new ResponseEntity<>(transactionResponse, HttpStatus.CREATED);
     }
 
 }
