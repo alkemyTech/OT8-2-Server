@@ -1,10 +1,10 @@
 package com.alkemy.wallet.controller;
 
-import com.alkemy.wallet.dto.UserDto;
+
+import com.alkemy.wallet.dto.response.PageableUserResponseDto;
 import com.alkemy.wallet.entity.User;
 import com.alkemy.wallet.service.IUserService;
 import com.alkemy.wallet.service.UserServiceImpl;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +21,9 @@ public class UserController {
         this.userService = userService;
     }
     @GetMapping
-    public ResponseEntity<List<UserDto>> getUsers(){
-        List<UserDto> users = userService.getUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    public ResponseEntity<PageableUserResponseDto> getUsers(@RequestParam(defaultValue = "0") int page){
+        PageableUserResponseDto response = userService.getUsers(page);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable Long id){
