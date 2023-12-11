@@ -18,6 +18,4 @@ public class TransactionResponseDto {
     private Double amount;
     private String description;
     private Timestamp creationDate;
-
-
 }

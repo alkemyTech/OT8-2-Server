@@ -24,9 +24,17 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
+
     @GetMapping("/{id}")
-    public ResponseEntity<List<TransactionDto>>getTransactionsByUserId(@PathVariable Long id){
-        List<TransactionDto> transactionsDto=transactionService.getTransactionsByUserId(id);
+    public ResponseEntity<TransactionResponseDto> getTransaction(@PathVariable Long id, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
+        TransactionResponseDto transactionResponse = transactionService.getTransaction(id,token);
+        return new ResponseEntity<>(transactionResponse,HttpStatus.OK);
+    }
+
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<TransactionDto>>getTransactionsByUserId(@PathVariable Long userId){
+        List<TransactionDto> transactionsDto=transactionService.getTransactionsByUserId(userId);
         return new ResponseEntity<>(transactionsDto, HttpStatus.OK);
     }
 
