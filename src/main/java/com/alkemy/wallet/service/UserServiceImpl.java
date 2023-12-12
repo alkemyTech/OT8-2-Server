@@ -3,6 +3,9 @@ package com.alkemy.wallet.service;
 import com.alkemy.wallet.dto.AccountDto;
 import com.alkemy.wallet.dto.UserDto;
 
+import com.alkemy.wallet.dto.response.UserInfoResponseDto;
+
+
 import com.alkemy.wallet.dto.request.UserUpdateRequestDto;
 import com.alkemy.wallet.entity.Account;
 import com.alkemy.wallet.entity.User;
@@ -29,10 +32,8 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements IUserService{
 
-    private final IUserRepository userRepository;
-
+    private final IUserRepository userRepository;  
     private final PasswordEncoder passwordEncoder;
-
     private final IJwtService jwtService;
 
     public UserServiceImpl(IUserRepository userRepository, JwtServiceImpl jwtService, PasswordEncoder passwordEncoder){
@@ -40,7 +41,9 @@ public class UserServiceImpl implements IUserService{
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
 
+
     }
+
     @Override
     public PageableUserResponseDto getUsers(int page) {
         int pageToFind = page > 0 ? page-1 : 0;
@@ -101,13 +104,23 @@ public class UserServiceImpl implements IUserService{
     }
 
     @Override
-    public User deleteUserById(Long id) {
+    public UserInfoResponseDto deleteUserById(Long id,String token) {
         Optional<User> userOptional =userRepository.findById(id);
         if(userOptional.isPresent()){
             User user=userOptional.get();
-            user.setSoftDelete(Boolean.TRUE);
-            userRepository.save(user);
-            return user;
+            String userEmail=jwtService.extractUsername(token.substring(7));
+            if(Objects.equals(user.getEmail(), userEmail)){
+                user.setSoftDelete(Boolean.TRUE);
+                userRepository.save(user);
+                return new UserInfoResponseDto(
+                        user.getEmail(),
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getCreationDate(),
+                        user.getUpdateDate()
+                );
+            }
+
         }
         return null;
     }
