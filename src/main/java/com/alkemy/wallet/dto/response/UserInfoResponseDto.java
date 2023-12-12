@@ -2,16 +2,10 @@ package com.alkemy.wallet.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.sql.Timestamp;
 
 
-import lombok.Setter;
-
-import java.sql.Timestamp;
 
 @AllArgsConstructor
 @Setter
@@ -22,7 +16,6 @@ public class UserInfoResponseDto {
     private String firstName;
     private String lastName;
     private Timestamp creationDate;
-
     private Timestamp updateDate;
 
 

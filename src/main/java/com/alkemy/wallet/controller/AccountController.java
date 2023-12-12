@@ -1,17 +1,13 @@
 package com.alkemy.wallet.controller;
 
 import java.util.List;
-
 import com.alkemy.wallet.dto.BalanceDto;
-
+import com.alkemy.wallet.dto.request.UpdateAccountRequestDto;
 import com.alkemy.wallet.service.IAccountService;
-
 import com.alkemy.wallet.dto.response.PageableAccountResponseDto;
-import com.alkemy.wallet.service.IAccountService;
-import com.alkemy.wallet.entity.Account;
 import com.alkemy.wallet.enums.ECurrency;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +53,7 @@ public class AccountController {
 
     @PostMapping("/{userId}")
     public ResponseEntity<AccountDto> createAccount(@PathVariable Long userId, @RequestBody AccountDto account){
-        AccountDto responseAccount = accountServiceImpl.createAccount(userId, ECurrency.valueOf(account.getCurrency()));
+        AccountDto responseAccount = accountService.createAccount(userId, ECurrency.valueOf(account.getCurrency()));
         return new ResponseEntity<>(responseAccount, HttpStatus.CREATED);
 
     }

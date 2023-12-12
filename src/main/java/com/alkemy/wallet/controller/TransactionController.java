@@ -1,16 +1,12 @@
 package com.alkemy.wallet.controller;
 
 import com.alkemy.wallet.dto.TransactionDto;
-
 import com.alkemy.wallet.dto.request.UpdateTransactionRequestDto;
-
 import com.alkemy.wallet.dto.request.DepositRequestDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
-
 import com.alkemy.wallet.service.ITransactionService;
 import com.alkemy.wallet.service.TransactionServiceImpl;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +40,7 @@ public class TransactionController {
     @PatchMapping("/{id}")
     public ResponseEntity<TransactionDto>updateTransactionDescription(@PathVariable Long id, @Valid @RequestBody UpdateTransactionRequestDto updateRequest,
                                                          @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
-        TransactionDto transactionDto = transactionServiceImpl.updateTransactionDescription(id,updateRequest,token);
+        TransactionDto transactionDto = transactionService.updateTransactionDescription(id,updateRequest,token);
         return new ResponseEntity<>(transactionDto, HttpStatus.OK);
     }
 
