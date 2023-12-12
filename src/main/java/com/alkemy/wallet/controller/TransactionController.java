@@ -1,8 +1,12 @@
 package com.alkemy.wallet.controller;
 
 import com.alkemy.wallet.dto.TransactionDto;
+
+import com.alkemy.wallet.dto.request.UpdateTransactionRequestDto;
+
 import com.alkemy.wallet.dto.request.DepositRequestDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
+
 import com.alkemy.wallet.service.ITransactionService;
 import com.alkemy.wallet.service.TransactionServiceImpl;
 import jakarta.validation.Valid;
@@ -36,6 +40,12 @@ public class TransactionController {
     public ResponseEntity<List<TransactionDto>>getTransactionsByUserId(@PathVariable Long userId){
         List<TransactionDto> transactionsDto=transactionService.getTransactionsByUserId(userId);
         return new ResponseEntity<>(transactionsDto, HttpStatus.OK);
+    }
+    @PatchMapping("/{id}")
+    public ResponseEntity<TransactionDto>updateTransactionDescription(@PathVariable Long id, @Valid @RequestBody UpdateTransactionRequestDto updateRequest,
+                                                         @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
+        TransactionDto transactionDto = transactionServiceImpl.updateTransactionDescription(id,updateRequest,token);
+        return new ResponseEntity<>(transactionDto, HttpStatus.OK);
     }
 
     @PostMapping("/deposit")

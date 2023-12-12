@@ -2,10 +2,14 @@ package com.alkemy.wallet.service;
 
 import com.alkemy.wallet.dto.TransactionDto;
 
+import com.alkemy.wallet.dto.request.UpdateTransactionRequestDto;
+
+
 
 import com.alkemy.wallet.dto.request.DepositRequestDto;
 
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
+
 import com.alkemy.wallet.entity.Account;
 import com.alkemy.wallet.entity.Transaction;
 import com.alkemy.wallet.entity.User;
@@ -28,6 +32,7 @@ import java.util.Optional;
 
 @Service
 public class TransactionServiceImpl implements ITransactionService {
+
 
 
 
@@ -70,6 +75,7 @@ public class TransactionServiceImpl implements ITransactionService {
         return null;
 
 
+
     @Override
     public List<TransactionDto> getTransactionsByUserId(Long userId){
         Optional<User> optionalUser=userRepository.findById(userId);
@@ -97,6 +103,29 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
+    public TransactionDto updateTransactionDescription(Long id, UpdateTransactionRequestDto updateRequest, String token) {
+        Optional<Transaction> transactionOptional = transactionRepository.findById(id);
+        if(transactionOptional.isPresent()){
+            Transaction transaction = transactionOptional.get();
+            String userEmail = jwtService.extractUsername(token.substring(7));
+            Optional<User> userOptional = userRepository.findByEmail(userEmail);
+            if(userOptional.isPresent()){
+                User user = userOptional.get();
+                if(Objects.equals(transaction.getAccount().getUser().getId(), user.getId())){
+                    if(!updateRequest.getDescription().isBlank()){
+                        transaction.setDescription(updateRequest.getDescription());
+                        transactionRepository.save(transaction);
+                        return new TransactionDto(
+                                transaction.getAccount().getId(),
+                                transaction.getId(),
+                                transaction.getAmount(),
+                                transaction.getType().name(),
+                                transaction.getDescription(),
+                                transaction.getTransactionDate()
+                        );
+                    }
+                }
+
     public TransactionResponseDto createDeposit(DepositRequestDto depositRequest, String token) {
         if(depositRequest.getAmount() < 0.00){
             return null;
@@ -131,8 +160,10 @@ public class TransactionServiceImpl implements ITransactionService {
                         transactionCreated.getTransactionDate()
                 );
 
+
             }
         }
         return null;
     }
+
 }
