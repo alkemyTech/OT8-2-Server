@@ -8,9 +8,11 @@ import com.alkemy.wallet.dto.response.TransactionResponseDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
+import com.alkemy.wallet.dto.response.TransactionResponseDto;
 import com.alkemy.wallet.dto.request.DepositRequestDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
 import java.util.List;
+
 
 
 public interface ITransactionService {
@@ -19,5 +21,4 @@ public interface ITransactionService {
     PageableTransactionResponseDto getTransactionsByUserId(Long userId, int page,String token);
     TransactionResponseDto createDeposit(TransactionRequestDto depositRequest, String token);
     TransactionResponseDto createPayment(TransactionRequestDto paymentRequest, String token);
-
 }

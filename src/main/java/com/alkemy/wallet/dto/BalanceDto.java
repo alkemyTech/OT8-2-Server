@@ -10,7 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 public class BalanceDto {
-    private long accountID;
+    private String userEmail;
+    private Long accountID;
     private String currency;
     private double balance;
     private List<TransactionDto> history;

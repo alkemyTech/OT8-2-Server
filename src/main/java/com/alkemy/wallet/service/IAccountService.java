@@ -9,10 +9,11 @@ import com.alkemy.wallet.enums.ECurrency;
 
 
 
+
 public interface IAccountService {
     PageableAccountResponseDto getAllAccounts(int page);
     List<AccountDto> getAccountsByUserId(Long id,String token);
-    List<BalanceDto> getBalanceById(Long id);
+    List<BalanceDto> getBalance(String token);
     AccountDto updateTransactionLimit(Long id, UpdateAccountRequestDto updateRequest, String token);
     AccountDto createAccount(String currency, String token);
 }
