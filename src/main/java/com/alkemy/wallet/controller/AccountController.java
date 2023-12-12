@@ -35,8 +35,8 @@ public class AccountController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<AccountDto>> getAccountsByUserId(@PathVariable Long id) {
-        List<AccountDto> accountsDto = accountService.getAccountsByUserId(id);
+    public ResponseEntity<List<AccountDto>> getAccountsByUserId(@PathVariable Long id, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
+        List<AccountDto> accountsDto = accountService.getAccountsByUserId(id,token);
         return new ResponseEntity<>(accountsDto, HttpStatus.OK);
     }
     @GetMapping("/balance/{id}")

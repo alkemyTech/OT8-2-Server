@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.alkemy.wallet.dto.BalanceDto;
 import com.alkemy.wallet.dto.request.UpdateAccountRequestDto;
 import com.alkemy.wallet.dto.response.PageableAccountResponseDto;
+import com.alkemy.wallet.enums.ERole;
 import com.alkemy.wallet.repository.IAccountRepository;
 import com.alkemy.wallet.dto.FixedTermDepositDto;
 import com.alkemy.wallet.dto.TransactionDto;
@@ -66,23 +67,28 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public List<AccountDto> getAccountsByUserId(Long id) {
+    public List<AccountDto> getAccountsByUserId(Long id,String token) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
-            List<Account> accounts = optionalUser.get().getAccounts();
-            List<AccountDto> accountsDto = new ArrayList<>();
-            for (Account account : accounts) {
-                AccountDto accountDto = new AccountDto(
-                    optionalUser.get().getEmail(),
-                    account.getId(), 
-                    account.getCurrency().name(), 
-                    account.getTransactionLimit(),
-                    account.getBalance(),
-                        account.getCreationDate()
-                );
-                accountsDto.add(accountDto);
+            User user = optionalUser.get();
+            String userEmail = jwtService.extractUsername(token.substring(7));
+            if(Objects.equals(user.getEmail(), userEmail) || user.getRole().getName() == ERole.ADMIN){
+                List<Account> accounts = user.getAccounts();
+                List<AccountDto> accountsDto = new ArrayList<>();
+                for (Account account : accounts) {
+                    AccountDto accountDto = new AccountDto(
+                            user.getEmail(),
+                            account.getId(),
+                            account.getCurrency().name(),
+                            account.getTransactionLimit(),
+                            account.getBalance(),
+                            account.getCreationDate()
+                    );
+                    accountsDto.add(accountDto);
+                }
+                return accountsDto;
+
             }
-            return accountsDto;
         }
         return null;
     }
