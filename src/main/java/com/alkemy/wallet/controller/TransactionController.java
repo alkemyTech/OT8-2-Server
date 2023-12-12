@@ -3,6 +3,7 @@ package com.alkemy.wallet.controller;
 import com.alkemy.wallet.dto.TransactionDto;
 import com.alkemy.wallet.dto.request.UpdateTransactionRequestDto;
 import com.alkemy.wallet.dto.request.TransactionRequestDto;
+import com.alkemy.wallet.dto.request.DepositRequestDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
 import com.alkemy.wallet.service.ITransactionService;
 import com.alkemy.wallet.service.TransactionServiceImpl;
