@@ -96,6 +96,22 @@ public class TransactionServiceImpl implements ITransactionService {
                         );
                         transactionsDto.add(transactionDto);
                     }
+            User user=optionalUser.get();
+            List<Account> accounts=user.getAccounts();
+            List<TransactionDto> transactionsDto= new ArrayList<>();
+            for(Account account:accounts){
+                List<Transaction> transactions=account.getTransactions();
+                for(Transaction transaction:transactions){
+                    TransactionDto transactionDto=new TransactionDto(
+                            account.getId(),
+                            transaction.getId(),
+                            transaction.getAmount(),
+                            transaction.getType().name(),
+                            transaction.getDescription(),
+                            transaction.getTransactionDate()
+                    );
+                    transactionsDto.add(transactionDto);
+                    return transactionsDto;
                 }
                 return new PageableTransactionResponseDto(
                         count,
