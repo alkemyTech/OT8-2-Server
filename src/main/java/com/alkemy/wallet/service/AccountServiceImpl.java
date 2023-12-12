@@ -92,19 +92,21 @@ public class AccountServiceImpl implements IAccountService {
         return null;
     }
     @Override
-    public List<BalanceDto> getBalanceById(Long id){
-        Optional<User> optionalUser=userRepository.findById(id);
+    public List<BalanceDto> getBalance(String token){
+        String userEmail = jwtService.extractUsername(token.substring(7));
+        Optional<User> optionalUser=userRepository.findByEmail(userEmail);
         if(optionalUser.isPresent()){
             User user=optionalUser.get();
             List<Account> accounts=user.getAccounts();
             List<BalanceDto> balancesDto= new ArrayList<>();
             for (Account account : accounts){
                 BalanceDto balanceDto= new BalanceDto(
+                        userEmail,
                         account.getId(),
                         account.getCurrency().name(),
                         account.getBalance(),
-                        getHistory(id),
-                        getFixedTerms(id)
+                        getHistory(account.getTransactions(),account.getId()),
+                        getFixedTerms(account.getFixedTermDeposits(),account.getId())
                 );
                 balancesDto.add(balanceDto);
             }
@@ -143,54 +145,40 @@ public class AccountServiceImpl implements IAccountService {
     }
 
 
-    public List<TransactionDto> getHistory(Long id){
-        Optional<User> optionalUser=userRepository.findById(id);
-        if(optionalUser.isPresent()){
-            User user=optionalUser.get();
-            List<Account> accounts=user.getAccounts();
-            List<TransactionDto> transactionsDto= new ArrayList<>();
-            for(Account account:accounts){
-                List<Transaction> transactions=account.getTransactions();
-                for(Transaction transaction:transactions){
-                    TransactionDto transactionDto=new TransactionDto(
-                            account.getId(),
-                            transaction.getId(),
-                            transaction.getAmount(),
-                            transaction.getType().name(),
-                            transaction.getDescription(),
-                            transaction.getTransactionDate()
-                    );
-                    transactionsDto.add(transactionDto);
-                }
-            }
+    public List<TransactionDto> getHistory(List<Transaction> transactions,Long accountId){
+        List<TransactionDto> transactionsDto = new ArrayList<>();
+        for(Transaction transaction:transactions){
+            TransactionDto transactionDto=new TransactionDto(
+                    accountId,
+                    transaction.getId(),
+                    transaction.getAmount(),
+                    transaction.getType().name(),
+                    transaction.getDescription(),
+                    transaction.getTransactionDate()
+            );
+            transactionsDto.add(transactionDto);
             return transactionsDto;
         }
         return null;
     }
-    public List<FixedTermDepositDto> getFixedTerms(Long id){
-        Optional<User> optionalUser=userRepository.findById(id);
-        if(optionalUser.isPresent()){
-            User user=optionalUser.get();
-            List<Account> accounts=user.getAccounts();
-            List<FixedTermDepositDto> fixedTermDepositsDto= new ArrayList<>();
-            for(Account account:accounts){
-                List<FixedTermDeposit> fixedTermDeposits=account.getFixedTermDeposits();
-                for(FixedTermDeposit fixedTermDeposit:fixedTermDeposits){
-                    FixedTermDepositDto fixedTermDepositDto=new FixedTermDepositDto(
-                            account.getId(),
-                            fixedTermDeposit.getId(),
-                            fixedTermDeposit.getAmount(),
-                            fixedTermDeposit.getInterest(),
-                            fixedTermDeposit.getCreationDate(),
-                            fixedTermDeposit.getClosingDate()
-                    );
-                    fixedTermDepositsDto.add(fixedTermDepositDto);
-                }
-            }
+
+    public List<FixedTermDepositDto> getFixedTerms(List<FixedTermDeposit> fixedTermDeposits,Long accountId){
+        List<FixedTermDepositDto> fixedTermDepositsDto = new ArrayList<>();
+        for(FixedTermDeposit fixedTermDeposit:fixedTermDeposits){
+            FixedTermDepositDto fixedTermDepositDto=new FixedTermDepositDto(
+                    accountId,
+                    fixedTermDeposit.getId(),
+                    fixedTermDeposit.getAmount(),
+                    fixedTermDeposit.getInterest(),
+                    fixedTermDeposit.getCreationDate(),
+                    fixedTermDeposit.getClosingDate()
+            );
+            fixedTermDepositsDto.add(fixedTermDepositDto);
             return fixedTermDepositsDto;
         }
         return null;
     }
+
 
 
     @Override
