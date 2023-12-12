@@ -4,25 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 import com.alkemy.wallet.dto.BalanceDto;
-
 import com.alkemy.wallet.dto.request.UpdateAccountRequestDto;
-
-
 import com.alkemy.wallet.dto.response.PageableAccountResponseDto;
 import com.alkemy.wallet.repository.IAccountRepository;
-
 import com.alkemy.wallet.dto.FixedTermDepositDto;
 import com.alkemy.wallet.dto.TransactionDto;
 import com.alkemy.wallet.entity.FixedTermDeposit;
 import com.alkemy.wallet.entity.Transaction;
 import com.alkemy.wallet.enums.ECurrency;
-import com.alkemy.wallet.repository.IAccountRepository;
-
-
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -33,14 +23,14 @@ import com.alkemy.wallet.repository.IUserRepository;
 
 @Service
 public class AccountServiceImpl implements IAccountService {
-
-
     private final IUserRepository userRepository;
     private final IAccountRepository accountRepository;
+    private final IJwtService jwtService;
 
-    public AccountServiceImpl(IUserRepository userRepository, IAccountRepository accountRepository) {
+    public AccountServiceImpl(IUserRepository userRepository, IAccountRepository accountRepository, JwtServiceImpl jwtService) {
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -62,7 +52,8 @@ public class AccountServiceImpl implements IAccountService {
                     account.getId(),
                     account.getCurrency().name(),
                     account.getBalance(),
-                    account.getTransactionLimit()
+                    account.getTransactionLimit(),
+                    account.getCreationDate()
             );
         }).toList();
         return new PageableAccountResponseDto(
@@ -73,9 +64,6 @@ public class AccountServiceImpl implements IAccountService {
                 accountsDto
         );
     }
-
-    @Autowired
-    private IAccountRepository accountRepository;
 
     @Override
     public List<AccountDto> getAccountsByUserId(Long id) {
@@ -89,7 +77,8 @@ public class AccountServiceImpl implements IAccountService {
                     account.getId(), 
                     account.getCurrency().name(), 
                     account.getTransactionLimit(),
-                    account.getBalance()
+                    account.getBalance(),
+                        account.getCreationDate()
                 );
                 accountsDto.add(accountDto);
             }
@@ -125,7 +114,7 @@ public class AccountServiceImpl implements IAccountService {
         Optional<Account> accountOptional = accountRepository.findById(id);
         if(accountOptional.isPresent()){
             Account account = accountOptional.get();
-            String userEmail = jwtService.extractUserName(token.substring(7));
+            String userEmail = jwtService.extractUsername(token.substring(7));
             Optional<User> userOptional = userRepository.findByEmail(userEmail);
             if(userOptional.isPresent()){
                 User user = userOptional.get();
@@ -138,7 +127,8 @@ public class AccountServiceImpl implements IAccountService {
                                 account.getId(),
                                 account.getCurrency().name(),
                                 account.getBalance(),
-                                account.getTransactionLimit()
+                                account.getTransactionLimit(),
+                                account.getCreationDate()
                         );
                     }
                 }
@@ -199,35 +189,31 @@ public class AccountServiceImpl implements IAccountService {
 
 
     @Override
-    public AccountDto createAccount(Long userId, ECurrency currency) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if(optionalUser.isPresent()){
-            User user = optionalUser.get();
-
-            Optional<Account> existAccount = accountRepository.findByUserAndCurrency(user, currency);
-            if(existAccount.isPresent()){
-                return null;
+    public AccountDto createAccount(String currency, String token) {
+        String userEmail = jwtService.extractUsername(token.substring(7));
+        Optional<User> userOptional = userRepository.findByEmail(userEmail);
+        if(userOptional.isPresent()) {
+            User user = userOptional.get();
+            List<Account> userAccounts = user.getAccounts();
+            Optional<Account> accountOptional = userAccounts.stream()
+                    .filter(account -> account.getCurrency().name().equals(currency))
+                    .findFirst();
+            if(accountOptional.isEmpty()) {
+                Account newAccount = new Account();
+                newAccount.setCurrency(ECurrency.valueOf(currency));
+                newAccount.setTransactionLimit(currency.equals(ECurrency.ARS.name()) ? 300000.0 : 1000.0);
+                newAccount.setBalance(0.0);
+                newAccount.setUser(user);
+                Account accountCreated = accountRepository.save(newAccount);
+                return new AccountDto(
+                        userEmail,
+                        accountCreated.getId(),
+                        currency,
+                        accountCreated.getTransactionLimit(),
+                        accountCreated.getBalance(),
+                        accountCreated.getCreationDate()
+                );
             }
-
-            Account account = new Account();
-            account.setUser(user);
-            account.setBalance(0.0);
-            account.setCurrency(currency);
-
-            if(ECurrency.ARS.equals(currency)){
-                account.setTransactionLimit(300000.0);
-            } else if (ECurrency.USD.equals(currency)) {
-                account.setTransactionLimit(1000.0);
-            }
-
-            accountRepository.save(account);
-            AccountDto accountDto = new AccountDto(
-                    account.getUser().getUsername(),
-                    account.getId(),
-                    account.getCurrency().name(),
-                    account.getTransactionLimit(),
-                    account.getBalance());
-            return accountDto;
         }
         return null;
     }
