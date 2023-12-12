@@ -2,28 +2,20 @@ package com.alkemy.wallet.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.sql.Timestamp;
-
-
 import lombok.Setter;
 
 import java.sql.Timestamp;
 
 @AllArgsConstructor
-@Setter
 @Getter
-
-public class UserInfoResponseDto {
+@Setter
+public class TransactionResponseDto {
     private String userEmail;
-    private String firstName;
-    private String lastName;
+    private Long accountId;
+    private Long transactionId;
+    private String currency;
+    private String transactionType;
+    private Double amount;
+    private String description;
     private Timestamp creationDate;
-
-    private Timestamp updateDate;
-
-
 }
