@@ -1,30 +1,16 @@
 package com.alkemy.wallet.service;
-
 import com.alkemy.wallet.dto.AccountDto;
 import com.alkemy.wallet.dto.UserDto;
-
 import com.alkemy.wallet.dto.response.UserInfoResponseDto;
-
-
 import com.alkemy.wallet.dto.request.UserUpdateRequestDto;
 import com.alkemy.wallet.entity.Account;
 import com.alkemy.wallet.entity.User;
 import com.alkemy.wallet.repository.IUserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-
-import com.alkemy.wallet.dto.response.UserInfoResponseDto;
-
 import com.alkemy.wallet.dto.response.PageableUserResponseDto;
-
-import com.alkemy.wallet.entity.Account;
-import com.alkemy.wallet.entity.User;
-import com.alkemy.wallet.repository.IUserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,8 +26,6 @@ public class UserServiceImpl implements IUserService{
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
-
-
     }
 
     @Override
@@ -96,7 +80,8 @@ public class UserServiceImpl implements IUserService{
                         userEmail,
                         user.getFirstName(),
                         user.getLastName(),
-                        user.getCreationDate()
+                        user.getCreationDate(),
+                        user.getUpdateDate()
                 );
             }
         }
@@ -130,7 +115,7 @@ public class UserServiceImpl implements IUserService{
         Optional<User> userOptional = userRepository.findById(id);
         if(userOptional.isPresent()){
             User user = userOptional.get();
-            String userEmail = jwtService.extractUserName(token.substring(7));
+            String userEmail = jwtService.extractUsername(token.substring(7));
             if(Objects.equals(userEmail, user.getEmail())){
                 boolean isUpdated = false;
                 if(userRequest.getFirstName() != null && !userRequest.getFirstName().isBlank()){
@@ -151,6 +136,7 @@ public class UserServiceImpl implements IUserService{
                             user.getEmail(),
                             user.getFirstName(),
                             user.getLastName(),
+                            user.getCreationDate(),
                             user.getUpdateDate()
                     );
                 }
