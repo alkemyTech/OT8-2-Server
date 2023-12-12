@@ -13,6 +13,5 @@ public interface IAccountService {
     List<AccountDto> getAccountsByUserId(Long id);
     List<BalanceDto> getBalanceById(Long id);
     AccountDto updateTransactionLimit(Long id, UpdateAccountRequestDto updateRequest, String token);
-
-    AccountDto createAccount(Long userId, ECurrency currency);
+    AccountDto createAccount(String currency, String token);
 }

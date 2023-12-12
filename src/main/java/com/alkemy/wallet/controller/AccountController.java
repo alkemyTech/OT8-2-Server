@@ -40,21 +40,20 @@ public class AccountController {
         return new ResponseEntity<>(accountsDto, HttpStatus.OK);
     }
     @GetMapping("/balance/{id}")
-    public ResponseEntity<List<BalanceDto>>getBalanceById(@PathVariable long id){
+    public ResponseEntity<List<BalanceDto>> getBalanceById(@PathVariable long id){
         List<BalanceDto> balanceDto =accountService.getBalanceById(id);
         return new ResponseEntity<>(balanceDto,HttpStatus.OK);
     }
 
-
-    @PatchMapping"/{id}")
-    public ResponseEntity<AccountDto> updateTransactionLimit(@PathVariable Long id, @Valid @RequestBody UpdateAccountRequestDto updateRequest, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
-        AccountDto accountDto = accountService.updateTransactionLimit(id,updateRequest,token);
-        return new ResponseEntity<>(accountDto,HttpStatus.OK);
+    @PatchMapping("/{id}")
+    public ResponseEntity<AccountDto> updateTransactionLimit(@PathVariable Long id, @Valid @RequestBody UpdateAccountRequestDto updateRequest, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
+        AccountDto accountDto = accountService.updateTransactionLimit(id, updateRequest, token);
+        return new ResponseEntity<>(accountDto, HttpStatus.OK);
+    }
 
     @PostMapping("/{userId}")
-    public ResponseEntity<AccountDto> createAccount(@PathVariable Long userId, @RequestBody AccountDto account){
-        AccountDto responseAccount = accountService.createAccount(userId, ECurrency.valueOf(account.getCurrency()));
+    public ResponseEntity<AccountDto> createAccount(@RequestParam String currency, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
+        AccountDto responseAccount = accountService.createAccount(currency,token);
         return new ResponseEntity<>(responseAccount, HttpStatus.CREATED);
-
     }
 }
