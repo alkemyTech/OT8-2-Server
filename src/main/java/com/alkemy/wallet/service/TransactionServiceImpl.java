@@ -96,6 +96,7 @@ public class TransactionServiceImpl implements ITransactionService {
                         );
                         transactionsDto.add(transactionDto);
                     }
+
                 }
                 return new PageableTransactionResponseDto(
                         count,
