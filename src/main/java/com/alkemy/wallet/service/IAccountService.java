@@ -5,6 +5,8 @@ import com.alkemy.wallet.dto.AccountDto;
 import com.alkemy.wallet.dto.BalanceDto;
 import com.alkemy.wallet.dto.request.UpdateAccountRequestDto;
 import com.alkemy.wallet.dto.response.PageableAccountResponseDto;
+import com.alkemy.wallet.enums.ECurrency;
+
 
 
 public interface IAccountService {
