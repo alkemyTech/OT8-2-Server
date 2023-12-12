@@ -3,6 +3,7 @@ package com.alkemy.wallet.service;
 import com.alkemy.wallet.dto.TransactionDto;
 import com.alkemy.wallet.dto.request.TransactionRequestDto;
 import com.alkemy.wallet.dto.request.UpdateTransactionRequestDto;
+import com.alkemy.wallet.dto.response.PageableTransactionResponseDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
 import com.alkemy.wallet.entity.Account;
 import com.alkemy.wallet.entity.Transaction;
@@ -12,6 +13,8 @@ import com.alkemy.wallet.enums.ETransactionType;
 import com.alkemy.wallet.repository.IAccountRepository;
 import com.alkemy.wallet.repository.ITransactionRepository;
 import com.alkemy.wallet.repository.IUserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -62,28 +65,46 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public List<TransactionDto> getTransactionsByUserId(Long userId){
+    public PageableTransactionResponseDto getTransactionsByUserId(Long userId, int page,String token){
+        int pageToFind = page > 0 ? page-1 : 0;
+        PageRequest pr = PageRequest.of(pageToFind,10);
+        Page<User> userPage = userRepository.findAll(pr);
+        long count = userPage.getTotalElements();
+        int pages = userPage.getTotalPages();
+        String prevPage = userPage.hasPrevious() ? "/api/v1/transactions/"+userId+"?page="+(page-1) : null;
+        String nextPage = userPage.hasNext() ? "/api/v1/transactions/"+userId+"?page="+(page+1) : null;
+        if(pages < page){
+            return null;
+        }
         Optional<User> optionalUser=userRepository.findById(userId);
         if(optionalUser.isPresent()){
-            User user=optionalUser.get();
-            List<Account> accounts=user.getAccounts();
-            List<TransactionDto> transactionsDto= new ArrayList<>();
-            for(Account account:accounts){
-                List<Transaction> transactions=account.getTransactions();
-                for(Transaction transaction:transactions){
-                    TransactionDto transactionDto=new TransactionDto(
-                            account.getId(),
-                            transaction.getId(),
-                            transaction.getAmount(),
-                            transaction.getType().name(),
-                            transaction.getDescription(),
-                            transaction.getTransactionDate()
-                    );
-                    transactionsDto.add(transactionDto);
-                    return transactionsDto;
+            User user = optionalUser.get();
+            String userEmail = jwtService.extractUsername(token.substring(7));
+            if(Objects.equals(user.getEmail(), userEmail) || user.getRole().getName() == ERole.ADMIN){
+                List<Account> accounts = user.getAccounts();
+                List<TransactionDto> transactionsDto = new ArrayList<>();
+                for(Account account:accounts){
+                    List<Transaction> transactions = account.getTransactions();
+                    for(Transaction transaction:transactions){
+                        TransactionDto transactionDto=new TransactionDto(
+                                account.getId(),
+                                transaction.getId(),
+                                transaction.getAmount(),
+                                transaction.getType().name(),
+                                transaction.getDescription(),
+                                transaction.getTransactionDate()
+                        );
+                        transactionsDto.add(transactionDto);
+                    }
                 }
+                return new PageableTransactionResponseDto(
+                        count,
+                        pages,
+                        prevPage,
+                        nextPage,
+                        transactionsDto
+                );
             }
-
         }
         return null;
     }

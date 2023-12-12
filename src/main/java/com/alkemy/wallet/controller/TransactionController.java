@@ -3,6 +3,7 @@ package com.alkemy.wallet.controller;
 import com.alkemy.wallet.dto.TransactionDto;
 import com.alkemy.wallet.dto.request.UpdateTransactionRequestDto;
 import com.alkemy.wallet.dto.request.TransactionRequestDto;
+import com.alkemy.wallet.dto.response.PageableTransactionResponseDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
 import com.alkemy.wallet.service.ITransactionService;
 import com.alkemy.wallet.service.TransactionServiceImpl;
@@ -33,9 +34,9 @@ public class TransactionController {
 
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<TransactionDto>>getTransactionsByUserId(@PathVariable Long userId){
-        List<TransactionDto> transactionsDto=transactionService.getTransactionsByUserId(userId);
-        return new ResponseEntity<>(transactionsDto, HttpStatus.OK);
+    public ResponseEntity<PageableTransactionResponseDto>getTransactionsByUserId(@PathVariable Long userId, @RequestParam(defaultValue = "0") int page,@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
+        PageableTransactionResponseDto transactionsResponse = transactionService.getTransactionsByUserId(userId,page,token);
+        return new ResponseEntity<>(transactionsResponse, HttpStatus.OK);
     }
     @PatchMapping("/{id}")
     public ResponseEntity<TransactionDto>updateTransactionDescription(@PathVariable Long id, @Valid @RequestBody UpdateTransactionRequestDto updateRequest,
