@@ -6,6 +6,7 @@ import com.alkemy.wallet.dto.request.TransactionRequestDto;
 import com.alkemy.wallet.dto.response.PageableTransactionResponseDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
+import com.alkemy.wallet.dto.response.TransactionResponseDto;
 import com.alkemy.wallet.dto.request.DepositRequestDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
 import java.util.List;
