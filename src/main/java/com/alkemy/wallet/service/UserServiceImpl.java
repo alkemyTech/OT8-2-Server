@@ -49,7 +49,8 @@ public class UserServiceImpl implements IUserService{
                         account.getId(),
                         account.getCurrency().name(),
                         account.getBalance(),
-                        account.getTransactionLimit()
+                        account.getTransactionLimit(),
+                        account.getCreationDate()
                 );
             }).toList();
             return new UserDto(
