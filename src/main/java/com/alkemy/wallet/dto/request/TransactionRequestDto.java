@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class DepositRequestDto {
+public class TransactionRequestDto {
     @Positive
     @NotNull
     private Double amount;
