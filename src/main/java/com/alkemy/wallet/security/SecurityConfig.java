@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request->
                         request
                                 .requestMatchers("/api/v1/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.GET,"api/v1/users").hasAnyAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.GET,"api/v1/users","api/v1/accounts").hasAnyAuthority("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
