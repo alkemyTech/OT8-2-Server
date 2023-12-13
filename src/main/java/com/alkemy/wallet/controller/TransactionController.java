@@ -1,9 +1,11 @@
 package com.alkemy.wallet.controller;
 
 import com.alkemy.wallet.dto.TransactionDto;
+import com.alkemy.wallet.dto.request.SendTransactionRequestDto;
 import com.alkemy.wallet.dto.request.UpdateTransactionRequestDto;
 import com.alkemy.wallet.dto.request.TransactionRequestDto;
 import com.alkemy.wallet.dto.response.PageableTransactionResponseDto;
+import com.alkemy.wallet.dto.response.SendTransactionResponseDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
 import com.alkemy.wallet.service.ITransactionService;
 import com.alkemy.wallet.service.TransactionServiceImpl;
@@ -55,6 +57,18 @@ public class TransactionController {
     public ResponseEntity<TransactionResponseDto> createPayment(@Valid @RequestBody TransactionRequestDto paymentRequest, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
         TransactionResponseDto paymentResponse = transactionService.createPayment(paymentRequest,token);
         return new ResponseEntity<>(paymentResponse,HttpStatus.CREATED);
+    }
+
+    @PostMapping("sendArs")
+    public ResponseEntity<SendTransactionResponseDto> sendArs(@Valid @RequestBody SendTransactionRequestDto transactionRequest, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
+        SendTransactionResponseDto transactionResponse = transactionService.sendArs(transactionRequest,token);
+        return new ResponseEntity<>(transactionResponse,HttpStatus.CREATED);
+    }
+
+    @PostMapping("sendUsd")
+    public ResponseEntity<SendTransactionResponseDto> sendUsd(@Valid @RequestBody SendTransactionRequestDto transactionRequest, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
+        SendTransactionResponseDto transactionResponse = transactionService.sendUsd(transactionRequest,token);
+        return new ResponseEntity<>(transactionResponse,HttpStatus.CREATED);
     }
 
 }

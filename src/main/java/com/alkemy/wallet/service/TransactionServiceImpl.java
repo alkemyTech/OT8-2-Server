@@ -1,13 +1,16 @@
 package com.alkemy.wallet.service;
 
 import com.alkemy.wallet.dto.TransactionDto;
+import com.alkemy.wallet.dto.request.SendTransactionRequestDto;
 import com.alkemy.wallet.dto.request.TransactionRequestDto;
 import com.alkemy.wallet.dto.request.UpdateTransactionRequestDto;
 import com.alkemy.wallet.dto.response.PageableTransactionResponseDto;
+import com.alkemy.wallet.dto.response.SendTransactionResponseDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
 import com.alkemy.wallet.entity.Account;
 import com.alkemy.wallet.entity.Transaction;
 import com.alkemy.wallet.entity.User;
+import com.alkemy.wallet.enums.ECurrency;
 import com.alkemy.wallet.enums.ERole;
 import com.alkemy.wallet.enums.ETransactionType;
 import com.alkemy.wallet.repository.IAccountRepository;
@@ -215,6 +218,103 @@ public class TransactionServiceImpl implements ITransactionService {
             }
         }
         return null;
+    }
+
+    @Override
+    public SendTransactionResponseDto sendArs(SendTransactionRequestDto transactionRequest, String token) {
+        String originUserEmail = jwtService.extractUsername(token.substring(7));
+        Optional<User> originUserOptional = userRepository.findByEmail(originUserEmail);
+        if(originUserOptional.isPresent()){
+            User originUser = originUserOptional.get();
+            Optional<Account> originAccountOptional = originUser.getAccounts().stream()
+                    .filter(account -> account.getCurrency() == ECurrency.ARS)
+                    .findFirst();
+            if(originAccountOptional.isPresent()){
+                Account originAccount = originAccountOptional.get();
+                if(originAccount.getBalance() >= transactionRequest.getAmount() && originAccount.getTransactionLimit() >= transactionRequest.getAmount() && transactionRequest.getAmount() >= 0.0){
+                    Optional<Account> destinyAccountOptional = accountRepository.findById(transactionRequest.getDestinyAccountId());
+                    if(destinyAccountOptional.isPresent() && destinyAccountOptional.get().getCurrency() == ECurrency.ARS){
+                        Account destinyAccount = destinyAccountOptional.get();
+                        User destinyUser = destinyAccount.getUser();
+                        Transaction paymentTransaction = createPaymentForOriginUser(originAccount,transactionRequest);
+                        createIncomeForDestinyUser(destinyAccount,transactionRequest);
+                        return new SendTransactionResponseDto(
+                                originUser.getEmail(),
+                                destinyUser.getEmail(),
+                                originAccount.getId(),
+                                destinyAccount.getId(),
+                                paymentTransaction.getId(),
+                                paymentTransaction.getAmount(),
+                                paymentTransaction.getType().name(),
+                                paymentTransaction.getDescription(),
+                                paymentTransaction.getTransactionDate()
+                        );
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public SendTransactionResponseDto sendUsd(SendTransactionRequestDto transactionRequest, String token) {
+        String originUserEmail = jwtService.extractUsername(token.substring(7));
+        Optional<User> originUserOptional = userRepository.findByEmail(originUserEmail);
+        if(originUserOptional.isPresent()){
+            User originUser = originUserOptional.get();
+            Optional<Account> originAccountOptional = originUser.getAccounts().stream()
+                    .filter(account -> account.getCurrency() == ECurrency.USD)
+                    .findFirst();
+            if(originAccountOptional.isPresent()){
+                Account originAccount = originAccountOptional.get();
+                if(originAccount.getBalance() >= transactionRequest.getAmount() && originAccount.getTransactionLimit() >= transactionRequest.getAmount() && transactionRequest.getAmount() >= 0.0){
+                    Optional<Account> destinyAccountOptional = accountRepository.findById(transactionRequest.getDestinyAccountId());
+                    if(destinyAccountOptional.isPresent() && destinyAccountOptional.get().getCurrency() == ECurrency.USD){
+                        Account destinyAccount = destinyAccountOptional.get();
+                        User destinyUser = destinyAccount.getUser();
+                        Transaction paymentTransaction = createPaymentForOriginUser(originAccount,transactionRequest);
+                        createIncomeForDestinyUser(destinyAccount,transactionRequest);
+                        return new SendTransactionResponseDto(
+                                originUser.getEmail(),
+                                destinyUser.getEmail(),
+                                originAccount.getId(),
+                                destinyAccount.getId(),
+                                paymentTransaction.getId(),
+                                paymentTransaction.getAmount(),
+                                paymentTransaction.getType().name(),
+                                paymentTransaction.getDescription(),
+                                paymentTransaction.getTransactionDate()
+                        );
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private void createIncomeForDestinyUser(Account destinyAccount, SendTransactionRequestDto transactionRequest) {
+        Transaction newTransaction = new Transaction();
+        newTransaction.setAmount(transactionRequest.getAmount());
+        newTransaction.setType(ETransactionType.INCOME);
+        String description = transactionRequest.getDescription().isBlank() ? "" : transactionRequest.getDescription();
+        newTransaction.setDescription(description);
+        newTransaction.setAccount(destinyAccount);
+        transactionRepository.save(newTransaction);
+        destinyAccount.setBalance(destinyAccount.getBalance() + transactionRequest.getAmount());
+        accountRepository.save(destinyAccount);
+    }
+
+    private Transaction createPaymentForOriginUser(Account originAccount, SendTransactionRequestDto transactionRequest) {
+        Transaction newTransaction = new Transaction();
+        newTransaction.setAmount(transactionRequest.getAmount());
+        newTransaction.setType(ETransactionType.PAYMENT);
+        String description = transactionRequest.getDescription().isBlank() ? "" : transactionRequest.getDescription();
+        newTransaction.setDescription(description);
+        newTransaction.setAccount(originAccount);
+        Transaction transactionCreated = transactionRepository.save(newTransaction);
+        originAccount.setBalance(originAccount.getBalance() - transactionRequest.getAmount());
+        accountRepository.save(originAccount);
+        return transactionCreated;
     }
 
 
