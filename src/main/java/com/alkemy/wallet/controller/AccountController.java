@@ -5,7 +5,6 @@ import com.alkemy.wallet.dto.BalanceDto;
 import com.alkemy.wallet.dto.request.UpdateAccountRequestDto;
 import com.alkemy.wallet.service.IAccountService;
 import com.alkemy.wallet.dto.response.PageableAccountResponseDto;
-import com.alkemy.wallet.enums.ECurrency;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
