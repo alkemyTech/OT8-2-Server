@@ -1,9 +1,11 @@
 package com.alkemy.wallet.service;
 
 import com.alkemy.wallet.dto.TransactionDto;
+import com.alkemy.wallet.dto.request.SendTransactionRequestDto;
 import com.alkemy.wallet.dto.request.UpdateTransactionRequestDto;
 import com.alkemy.wallet.dto.request.TransactionRequestDto;
 import com.alkemy.wallet.dto.response.PageableTransactionResponseDto;
+import com.alkemy.wallet.dto.response.SendTransactionResponseDto;
 import com.alkemy.wallet.dto.response.TransactionResponseDto;
 
 public interface ITransactionService {
@@ -12,4 +14,6 @@ public interface ITransactionService {
     PageableTransactionResponseDto getTransactionsByUserId(Long userId, int page,String token);
     TransactionResponseDto createDeposit(TransactionRequestDto depositRequest, String token);
     TransactionResponseDto createPayment(TransactionRequestDto paymentRequest, String token);
+    SendTransactionResponseDto sendArs(SendTransactionRequestDto transactionRequest, String token);
+    SendTransactionResponseDto sendUsd(SendTransactionRequestDto transactionRequest, String token);
 }
