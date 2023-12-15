@@ -51,7 +51,7 @@ public class AccountController {
         return new ResponseEntity<>(accountDto, HttpStatus.OK);
     }
 
-    @PostMapping("/{userId}")
+    @PostMapping()
     public ResponseEntity<AccountDto> createAccount(@RequestParam String currency, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
         AccountDto responseAccount = accountService.createAccount(currency,token);
         return new ResponseEntity<>(responseAccount, HttpStatus.CREATED);
