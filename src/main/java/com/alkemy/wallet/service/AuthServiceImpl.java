@@ -38,9 +38,10 @@ public class AuthServiceImpl implements IAuthService{
         Role userRole = roleRepository.findByName(ERole.USER).get();
         newUser.setRole(userRole);
         newUser.setAccounts(null);
-        userRepository.save(newUser);
+        User savedUser = userRepository.save(newUser);
         String jwt = jwtService.generateToken(newUser);
         return new JwtAuthenticationResponseDto(
+                savedUser.getId(),
                 registerRequest.getEmail(),
                 registerRequest.getFirstName(),
                 registerRequest.getLastName(),
@@ -57,6 +58,7 @@ public class AuthServiceImpl implements IAuthService{
                 .orElseThrow(()-> new IllegalArgumentException("Invalid Email or Password"));
         String jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponseDto(
+                user.getId(),
                 user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
