@@ -69,16 +69,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     public PageableTransactionResponseDto getTransactionsByUserId(Long userId, int page,String token){
-        int pageToFind = page > 0 ? page-1 : 0;
-        PageRequest pr = PageRequest.of(pageToFind,10);
-        Page<User> userPage = userRepository.findAll(pr);
-        long count = userPage.getTotalElements();
-        int pages = userPage.getTotalPages();
-        String prevPage = userPage.hasPrevious() ? "/api/v1/transactions/"+userId+"?page="+(page-1) : null;
-        String nextPage = userPage.hasNext() ? "/api/v1/transactions/"+userId+"?page="+(page+1) : null;
-        if(pages < page){
-            return null;
-        }
+
         Optional<User> optionalUser=userRepository.findById(userId);
         if(optionalUser.isPresent()){
             User user = optionalUser.get();
@@ -100,6 +91,16 @@ public class TransactionServiceImpl implements ITransactionService {
                         );
                         transactionsDto.add(transactionDto);
                     }
+                }
+                int pageToFind = page > 0 ? page-1 : 0;
+                PageRequest pr = PageRequest.of(pageToFind,10);
+                Page<Transaction> transactionPage = transactionRepository.findAll(pr);
+                long count = transactionPage.getTotalElements();
+                int pages = transactionPage.getTotalPages();
+                String prevPage = transactionPage.hasPrevious() ? "/api/v1/transactions/"+userId+"?page="+(page-1) : null;
+                String nextPage = transactionPage.hasNext() ? "/api/v1/transactions/"+userId+"?page="+(page+1) : null;
+                if(pages < page){
+                    return null;
                 }
                 return new PageableTransactionResponseDto(
                         count,
