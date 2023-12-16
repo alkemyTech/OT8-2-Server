@@ -59,13 +59,13 @@ public class TransactionController {
         return new ResponseEntity<>(paymentResponse,HttpStatus.CREATED);
     }
 
-    @PostMapping("sendArs")
+    @PostMapping("/sendArs")
     public ResponseEntity<SendTransactionResponseDto> sendArs(@Valid @RequestBody SendTransactionRequestDto transactionRequest, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
         SendTransactionResponseDto transactionResponse = transactionService.sendArs(transactionRequest,token);
         return new ResponseEntity<>(transactionResponse,HttpStatus.CREATED);
     }
 
-    @PostMapping("sendUsd")
+    @PostMapping("/sendUsd")
     public ResponseEntity<SendTransactionResponseDto> sendUsd(@Valid @RequestBody SendTransactionRequestDto transactionRequest, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
         SendTransactionResponseDto transactionResponse = transactionService.sendUsd(transactionRequest,token);
         return new ResponseEntity<>(transactionResponse,HttpStatus.CREATED);
