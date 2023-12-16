@@ -18,6 +18,7 @@ import com.alkemy.wallet.repository.ITransactionRepository;
 import com.alkemy.wallet.repository.IUserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -69,7 +70,6 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     public PageableTransactionResponseDto getTransactionsByUserId(Long userId, int page,String token){
-
         Optional<User> optionalUser=userRepository.findById(userId);
         if(optionalUser.isPresent()){
             User user = optionalUser.get();
@@ -77,30 +77,28 @@ public class TransactionServiceImpl implements ITransactionService {
             if(Objects.equals(user.getEmail(), userEmail) || user.getRole().getName() == ERole.ADMIN){
                 List<Account> accounts = user.getAccounts();
                 List<TransactionDto> transactionsDto = new ArrayList<>();
-                for(Account account:accounts){
-                    List<Transaction> transactions = account.getTransactions();
-                    for(Transaction transaction:transactions){
-                        TransactionDto transactionDto=new TransactionDto(
-                                account.getId(),
-                                account.getCurrency().name(),
-                                transaction.getId(),
-                                transaction.getAmount(),
-                                transaction.getType().name(),
-                                transaction.getDescription(),
-                                transaction.getTransactionDate()
-                        );
-                        transactionsDto.add(transactionDto);
-                    }
-                }
                 int pageToFind = page > 0 ? page-1 : 0;
-                PageRequest pr = PageRequest.of(pageToFind,10);
-                Page<Transaction> transactionPage = transactionRepository.findAll(pr);
+                PageRequest pr = PageRequest.of(pageToFind,10, Sort.by(Sort.Direction.DESC,"transactionDate"));
+                Page<Transaction> transactionPage = transactionRepository.findAllByAccountIn(accounts,pr);
                 long count = transactionPage.getTotalElements();
                 int pages = transactionPage.getTotalPages();
                 String prevPage = transactionPage.hasPrevious() ? "/api/v1/transactions/"+userId+"?page="+(page-1) : null;
                 String nextPage = transactionPage.hasNext() ? "/api/v1/transactions/"+userId+"?page="+(page+1) : null;
                 if(pages < page){
                     return null;
+                }
+                List<Transaction> transactions = transactionPage.getContent();
+                for(Transaction transaction:transactions){
+                    TransactionDto transactionDto=new TransactionDto(
+                            transaction.getAccount().getId(),
+                            transaction.getAccount().getCurrency().name(),
+                            transaction.getId(),
+                            transaction.getAmount(),
+                            transaction.getType().name(),
+                            transaction.getDescription(),
+                            transaction.getTransactionDate()
+                    );
+                    transactionsDto.add(transactionDto);
                 }
                 return new PageableTransactionResponseDto(
                         count,
