@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 @Setter
 public class TransactionDto {
     private Long accountId;
+    private String currency;
     private Long transactionId;
     private double amount;
     private String type;

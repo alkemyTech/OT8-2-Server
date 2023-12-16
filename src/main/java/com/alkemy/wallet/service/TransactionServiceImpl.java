@@ -91,6 +91,7 @@ public class TransactionServiceImpl implements ITransactionService {
                     for(Transaction transaction:transactions){
                         TransactionDto transactionDto=new TransactionDto(
                                 account.getId(),
+                                account.getCurrency().name(),
                                 transaction.getId(),
                                 transaction.getAmount(),
                                 transaction.getType().name(),
@@ -127,6 +128,7 @@ public class TransactionServiceImpl implements ITransactionService {
                         transactionRepository.save(transaction);
                         return new TransactionDto(
                                 transaction.getAccount().getId(),
+                                transaction.getAccount().getCurrency().name(),
                                 transaction.getId(),
                                 transaction.getAmount(),
                                 transaction.getType().name(),
