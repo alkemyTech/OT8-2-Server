@@ -198,7 +198,7 @@ public class TransactionServiceImpl implements ITransactionService {
                 if (account.getBalance() >= paymentRequest.getAmount()) {
                     Transaction newTransaction = new Transaction();
                     newTransaction.setAmount(paymentRequest.getAmount());
-                    newTransaction.setType(ETransactionType.DEPOSIT);
+                    newTransaction.setType(ETransactionType.PAYMENT);
                     newTransaction.setDescription(StringUtils.hasText(paymentRequest.getDescription()) ? paymentRequest.getDescription() : "");
                     newTransaction.setAccount(account);
                     Transaction transactionCreated = transactionRepository.save(newTransaction);
