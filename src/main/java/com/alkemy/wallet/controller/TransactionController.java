@@ -35,8 +35,8 @@ public class TransactionController {
     }
 
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<PageableTransactionResponseDto>getTransactionsByUserId(@PathVariable Long userId, @RequestParam(defaultValue = "0") int page,@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
+    @GetMapping
+    public ResponseEntity<PageableTransactionResponseDto>getTransactionsByUserId(@RequestParam(name="user") Long userId, @RequestParam(defaultValue = "0") int page,@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
         PageableTransactionResponseDto transactionsResponse = transactionService.getTransactionsByUserId(userId,page,token);
         return new ResponseEntity<>(transactionsResponse, HttpStatus.OK);
     }

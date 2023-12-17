@@ -150,6 +150,7 @@ public class AccountServiceImpl implements IAccountService {
         for(Transaction transaction:transactions){
             TransactionDto transactionDto=new TransactionDto(
                     accountId,
+                    transaction.getAccount().getCurrency().name(),
                     transaction.getId(),
                     transaction.getAmount(),
                     transaction.getType().name(),
