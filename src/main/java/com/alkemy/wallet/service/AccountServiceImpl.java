@@ -133,8 +133,8 @@ public class AccountServiceImpl implements IAccountService {
                                 userEmail,
                                 account.getId(),
                                 account.getCurrency().name(),
-                                account.getBalance(),
                                 account.getTransactionLimit(),
+                                account.getBalance(),
                                 account.getCreationDate()
                         );
                     }
