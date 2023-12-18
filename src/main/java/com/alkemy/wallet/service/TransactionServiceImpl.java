@@ -297,8 +297,11 @@ public class TransactionServiceImpl implements ITransactionService {
         Transaction newTransaction = new Transaction();
         newTransaction.setAmount(transactionRequest.getAmount());
         newTransaction.setType(ETransactionType.INCOME);
-        String description = transactionRequest.getDescription().isBlank() ? "" : transactionRequest.getDescription();
-        newTransaction.setDescription(description);
+        if(transactionRequest.getDescription() != null){
+            String description = transactionRequest.getDescription().isBlank() ? "" : transactionRequest.getDescription();
+            newTransaction.setDescription(description);
+        }
+        newTransaction.setDescription("");
         newTransaction.setAccount(destinyAccount);
         transactionRepository.save(newTransaction);
         destinyAccount.setBalance(destinyAccount.getBalance() + transactionRequest.getAmount());
@@ -309,8 +312,13 @@ public class TransactionServiceImpl implements ITransactionService {
         Transaction newTransaction = new Transaction();
         newTransaction.setAmount(transactionRequest.getAmount());
         newTransaction.setType(ETransactionType.PAYMENT);
-        String description = transactionRequest.getDescription().isBlank() ? "" : transactionRequest.getDescription();
-        newTransaction.setDescription(description);
+        if(transactionRequest.getDescription() != null){
+            String description = transactionRequest.getDescription().isBlank() ? "" : transactionRequest.getDescription();
+            newTransaction.setDescription(description);
+        }
+        else{
+            newTransaction.setDescription("");
+        }
         newTransaction.setAccount(originAccount);
         Transaction transactionCreated = transactionRepository.save(newTransaction);
         originAccount.setBalance(originAccount.getBalance() - transactionRequest.getAmount());

@@ -8,10 +8,13 @@ import com.alkemy.wallet.entity.User;
 import com.alkemy.wallet.enums.ERole;
 import com.alkemy.wallet.repository.IRoleRepository;
 import com.alkemy.wallet.repository.IUserRepository;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthServiceImpl implements IAuthService{
@@ -56,6 +59,9 @@ public class AuthServiceImpl implements IAuthService{
         );
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(()-> new IllegalArgumentException("Invalid Email or Password"));
+        if(user.getSoftDelete() != null && user.getSoftDelete()){
+            throw  new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
         String jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponseDto(
                 user.getId(),
