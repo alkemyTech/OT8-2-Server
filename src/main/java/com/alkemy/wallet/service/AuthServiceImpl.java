@@ -60,7 +60,7 @@ public class AuthServiceImpl implements IAuthService{
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(()-> new IllegalArgumentException("Invalid Email or Password"));
         if(user.getSoftDelete() != null && user.getSoftDelete()){
-            throw  new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+            throw new IllegalArgumentException("Invalid Email or Password");
         }
         String jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponseDto(
